@@ -1,5 +1,5 @@
 {
-	"name": "Generic_ADBDeltaLake_DS",
+	"name": "Generic_ADB_DeltaLake_DS",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureDatabricksDeltaLake1",
