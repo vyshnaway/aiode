@@ -2,7 +2,7 @@
 	"name": "aiode",
 	"properties": {
 		"globalConfigurations": {
-			"PolicyValidationEnabled": "false"
+			"PolicyValidationEnabled": "true"
 		},
 		"trustModeClaimForMi": {
 			"value": "Enabled",
