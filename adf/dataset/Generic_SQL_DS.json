@@ -5,7 +5,10 @@
 			"referenceName": "AzureSqlDatabase1",
 			"type": "LinkedServiceReference",
 			"parameters": {
-				"db_name": "@dataset().db_name"
+				"db_name": {
+					"value": "@dataset().db_name",
+					"type": "Expression"
+				}
 			}
 		},
 		"parameters": {
@@ -23,7 +26,10 @@
 		"type": "AzureSqlTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": "@dataset().schema_name",
+			"schema": {
+				"value": "@dataset().schema_name",
+				"type": "Expression"
+			},
 			"table": {
 				"value": "@dataset().table_name",
 				"type": "Expression"

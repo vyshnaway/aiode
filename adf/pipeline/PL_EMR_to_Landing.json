@@ -135,12 +135,51 @@
 													"type": "ParquetReadSettings"
 												}
 											},
-											"enableStaging": false
+											"sink": {
+												"type": "ParquetSink",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings"
+												},
+												"formatSettings": {
+													"type": "ParquetWriteSettings"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
 										},
 										"inputs": [
 											{
 												"referenceName": "Generic_ADLS_Paquet_DS",
-												"type": "DatasetReference"
+												"type": "DatasetReference",
+												"parameters": {
+													"container": "layer-bronze",
+													"file_path": "hosa",
+													"file_name": "encounters"
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "Generic_ADLS_Paquet_DS",
+												"type": "DatasetReference",
+												"parameters": {
+													"container": "layer-bronze",
+													"file_path": {
+														"value": "@concat(\n    item().targetpath,\n    'archive',\n    formatDateTime(utcNow(), 'yyyy'),\n    '/',\n    formatDateTime(utcNow(), '%M'),\n    '/',\n    formatDateTime(utcNow(), '%d')\n)",
+														"type": "Expression"
+													},
+													"file_name": {
+														"value": "@item().tablename",
+														"type": "Expression"
+													}
+												}
 											}
 										]
 									}
@@ -160,6 +199,10 @@
 							],
 							"userProperties": [],
 							"typeProperties": {
+								"expression": {
+									"value": "@equals(item().loadtype, 'full')",
+									"type": "Expression"
+								},
 								"ifFalseActivities": [
 									{
 										"name": "Fetch Logs",
@@ -232,8 +275,68 @@
 										},
 										"userProperties": [],
 										"typeProperties": {
-											"enableStaging": false
-										}
+											"source": {
+												"type": "AzureSqlSource",
+												"sqlReaderQuery": {
+													"value": "@concat(\n    'SELECT * FROM ', item().tablename\n)",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "ParquetSink",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings"
+												},
+												"formatSettings": {
+													"type": "ParquetWriteSettings"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "Generic_SQL_DS",
+												"type": "DatasetReference",
+												"parameters": {
+													"db_name": {
+														"value": "@item().database",
+														"type": "Expression"
+													},
+													"schema_name": {
+														"value": "@split(item().tablename, '.')[0]",
+														"type": "Expression"
+													},
+													"table_name": {
+														"value": "@split(item().tablename, '.')[1]",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "Generic_ADLS_Paquet_DS",
+												"type": "DatasetReference",
+												"parameters": {
+													"container": "layer-bronze",
+													"file_path": {
+														"value": "@split(item().tablename, '.')[0]",
+														"type": "Expression"
+													},
+													"file_name": "@split(item().tablename, '.')[1]"
+												}
+											}
+										]
 									},
 									{
 										"name": "Insert Logs on Full_Load",
