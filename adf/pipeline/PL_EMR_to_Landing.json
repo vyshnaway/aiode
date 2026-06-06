@@ -158,20 +158,105 @@
 									]
 								}
 							],
-							"userProperties": []
-						},
-						{
-							"name": "Notebook1",
-							"type": "DatabricksNotebook",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": []
+							"userProperties": [],
+							"typeProperties": {
+								"ifFalseActivities": [
+									{
+										"name": "Fetch Logs",
+										"type": "Lookup",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": []
+									},
+									{
+										"name": "Increamental_Load",
+										"type": "Copy",
+										"dependsOn": [
+											{
+												"activity": "Fetch Logs",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"enableStaging": false
+										}
+									},
+									{
+										"name": "Insert Logs on Incremental_Load",
+										"type": "Lookup",
+										"dependsOn": [
+											{
+												"activity": "Increamental_Load",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": []
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "Full_Load",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"enableStaging": false
+										}
+									},
+									{
+										"name": "Insert Logs on Full_Load",
+										"type": "Lookup",
+										"dependsOn": [
+											{
+												"activity": "Full_Load",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": []
+									}
+								]
+							}
 						}
 					]
 				}
