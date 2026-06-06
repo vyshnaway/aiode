@@ -110,6 +110,10 @@
 							],
 							"userProperties": [],
 							"typeProperties": {
+								"expression": {
+									"value": "@equals(activity('File_Existence').output.exists,1)",
+									"type": "Expression"
+								},
 								"ifTrueActivities": [
 									{
 										"name": "Copy Existing",
@@ -277,10 +281,6 @@
 										"typeProperties": {
 											"source": {
 												"type": "AzureSqlSource",
-												"sqlReaderQuery": {
-													"value": "@concat(\n    'SELECT * FROM ', item().tablename\n)",
-													"type": "Expression"
-												},
 												"queryTimeout": "02:00:00",
 												"partitionOption": "None"
 											},
