@@ -8,7 +8,9 @@
 				"db_name": {
 					"value": "@dataset().db_name",
 					"type": "Expression"
-				}
+				},
+				"username": "@dataset().username",
+				"password": "@dataset().password"
 			}
 		},
 		"parameters": {
@@ -19,6 +21,12 @@
 				"type": "string"
 			},
 			"table_name": {
+				"type": "string"
+			},
+			"username": {
+				"type": "string"
+			},
+			"password": {
 				"type": "string"
 			}
 		},
